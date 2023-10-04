@@ -1,0 +1,66 @@
+#!/bin/sh                                                                                                                                                                   
+                                                                                                                                                                            
+if [ $# -eq 0 ]; then                                                                                                                                                       
+        echo "file pdf:/ \"Unix in the Internet\" \"CUPS PDF Printer\""                                                                                                     
+        exit 0                                                                                                                                                              
+fi                                                                                                                                                                          
+                                                                                                                                                                            
+################################################################################                                                                                            
+# Programs run from this script.  The (which) command doesn't seem to work in  #                                                                                            
+# a shell that is called by CUPS so they must be hardcoded.                    #                                                                                            
+################################################################################                                                                                            
+DD=/bin/dd                                                                                                                                                                  
+PS2PDF=/usr/local/bin/ps2pdf                                                                                                                                                
+MKDIR=/bin/mkdir                                                                                                                                                            
+CHMOD=/bin/chmod                                                                                                                                                            
+CHOWN=/usr/sbin/chown                                                                                                                                                       
+                                                                                                                                                                            
+################################################################################                                                                                            
+# Set the PATH to allow the ps2pdf application to run other applications.      #                                                                                            
+################################################################################                                                                                            
+PATH=$PATH:/usr/local/bin                                                                                                                                                   
+                                                                                                                                                                            
+################################################################################                                                                                            
+# Set the input parameters.                                                    #                                                                                            
+################################################################################                                                                                            
+JOBID=$1                                                                                                                                                                    
+UNAME=$2
+JOBNAME=$3
+PAGES=$4
+OPTIONS=$5
+
+################################################################################
+# Determine the output directory and current date/time.                        #
+################################################################################
+OUTPUTDIR=/home/PDF/${UNAME}
+DATE=`date +%b%d-%H%M%S`
+
+################################################################################
+# Set output filename                                                          #
+################################################################################
+PDFFILE=$OUTPUTDIR/$JOBNAME-$DATE.pdf
+
+logger "PDF Printer - User(${UNAME}) - Job(${JOBID} - ${JOBNAME})"
+
+################################################################################
+# If necessary, create the output directory and set the directory owner to the #
+# print job username.  Also set directory permissions.                         #
+################################################################################
+$MKDIR -p "$OUTPUTDIR"
+$CHOWN "$UNAME" "$OUTPUTDIR"
+$CHMOD 0750 $OUTPUTDIR
+$CHMOD 0750 /home/PDF
+
+# Create PDF, either from a file if provided or from stdin
+if [ $# -eq 6 ]; then
+ logger "6 params passed"
+        $PS2PDF $6 "$PDFFILE"
+else
+ logger "only 5 params passed"
+ cat > "$PDFFILE"
+#        $PS2PDF - "$PDFFILE" >> /dev/null
+fi
+
+# Set owenership and permissions on the generated file
+$CHOWN $UNAME "$PDFFILE"
+$CHMOD 0640 "$PDFFILE"

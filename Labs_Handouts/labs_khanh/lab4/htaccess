@@ -1,0 +1,6 @@
+AuthType Basic
+AuthName "Enter Password"
+AuthUserFile "/usr/local/www/apache24/.htpasswd"
+AuthGroupFile "/dev/null"
+
+Require user ruleperson

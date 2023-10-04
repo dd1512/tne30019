@@ -1,0 +1,6 @@
+check log
+
+/var/log/messages
+
+
+delete .jnl files fix some errors

@@ -1,0 +1,87 @@
+Lab5-P
+
+/usr/local/etc/apache24/httpd.conf
+
+	Include etc/apache24/extra/httpd-vhosts.conf
+
+/usr/local/etc/apache24/extra/httpd-vhosts.conf
+
+	<VirtualHost *:80>
+	    ServerAdmin qkle@swin.edu.au
+	    DocumentRoot "/usr/local/www/armitagechemicals.unix"
+	    ServerName armitagechemicals.unix
+	    ErrorLog "/var/log/armitagechemicals.unix-error_log"
+	    CustomLog "/var/log/armitagechemicals.unix-access_log" common
+        <Directory /usr/local/www/armitagechemicals.unix>
+            Require all granted
+        </Directory>
+	</VirtualHost>
+
+------------------------------------------------------------------------
+Lab5-D (https://httpd.apache.org/docs/2.4/howto/cgi.html)
+
+/usr/local/etc/apache24/httpd.conf
+
+	#LoadModule cgid_module libexec/apache24/mod_cgid.so
+	LoadModule cgi_module libexec/apache24/mod_cgi.so
+
+
+/usr/local/etc/apache24/extra/httpd-vhosts.conf
+
+	<VirtualHost *:80>
+	    ServerAdmin qkle@swin.edu.au
+	    DocumentRoot "/usr/local/www/aristocrats.unix"
+	    ServerName aristocrats.unix
+	    ErrorLog "/var/log/aristocrats.unix-error_log"
+	    CustomLog "/var/log/aristocrats.unix-access_log" common
+        <Directory /usr/local/www/aristocrats.unix>
+            Require all granted
+            Options +ExecCGI
+            AddHandler cgi-script .cgi
+            DirectoryIndex index.html index.cgi
+        </Directory>
+	</VirtualHost>
+
+chmod +x index.cgi
+
+# Fix for lab 4 to work with lab 5
+<VirtualHost *:80>
+    ServerAdmin qkle@swin.edu.au
+    DocumentRoot "/usr/local/www/apache24/data/"
+    ServerName rule30.i4t.swin.edu.au
+    ErrorLog "/var/log/http-error_log"
+    CustomLog "/var/log/http-access_log" common
+    <Directory "/usr/local/www/apache24/data/">
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+
+###
+Jason configuration
+###
+<VirtualHost *:80>
+    ServerAdmin webmaster@dummy-host.example.com
+    DocumentRoot "/usr/local/www/armitagechemicals.unix"
+    ServerName armitagechemicals.unix
+    ErrorLog "/var/log/armitagechemicals.unix-error_log"
+    CustomLog "/var/log/armitagechemicals.unix-access_log" common
+    <Directory />
+        Options +Indexes
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@dummy-host.example.com
+    DocumentRoot "/usr/local/www/aristocrats.unix"
+    ServerName aristocrats.unix
+    ErrorLog "/var/log/aristocrats.unix-error_log"
+    CustomLog "/var/log/aristocrats.unix-access_log" common
+    <Directory />
+        Options +Indexes +ExecCGI
+        Require all granted
+        AddHandler cgi-script .cgi
+        DirectoryIndex index.html index.cgi
+    </Directory>
+</VirtualHost>

@@ -1,0 +1,113 @@
+#!/usr/local/bin/python3.9
+################################################################################
+# Sample Python program with printing functionaility for P-Lab-06-PCAP-Programming-P
+################################################################################
+
+##########
+# You will probably want all these libraries for your actual program
+##########
+import datetime
+import time
+import sys
+import dpkt
+import socket
+
+##########
+# print_flow_summary_header()
+# 
+# Prints the first lines of output as required by the marking script
+##########
+def print_flow_summary_header():
+    print('\n--------------- PER-FLOW INFO -----------------\n')
+
+##########
+# print_flow_summary_footer()
+# 
+# Prints the last line of output as required by the marking script
+##########
+def print_flow_summary_footer():
+    print('-----------------------------------------------')
+
+##########
+# print_flow_summary_single(u_int isrc_ip, u_short src_port, u_int idst_ip, u_short dst_port,
+#                           char *protocol, struct timeval *start_time, u_int flow_packets, u_int flow_bytes) 
+# 
+# isrc_ip      - 32-bit IP address
+# src_port     - Source port number
+# idst_ip      - 32-bit IP address
+# dst_port     - Destination port number
+# protocol     - String containing protocol (should be 'tcp' or 'udp')
+# start_time   - Timestamp of first packet in the nominated flow
+# flow_packets - Integer count of total packets in this flow
+# flow_bytes   - Integer sum of all packet sizes in this flow
+# 
+# Print the lines of data as required by the marking script for ALL packets in ONE flow from the PCAP file
+# The function will ensure formatting and convert IP addresses to strings for display
+##########
+def print_flow_summary_single(src_ip, src_port, dst_ip, dst_port, protocol, \
+			      start_time, flow_packets, flow_bytes):
+  
+    print('Flow: %s:%s-%s:%s' % (src_ip, src_port, dst_ip, dst_port))
+    print('Protocol: %s' % (protocol))
+    print('Start time: %s' % (datetime.datetime.utcfromtimestamp(start_time)))
+    print('Total packets: %u\nTotal bytes: %u\n' % (flow_packets, flow_bytes))
+
+##########
+# run_example
+#
+# Main function of sample program to demonstrate use of provided functions
+#
+# 1) Parse command line parameter. Fail if PCAP filename not provided and file cannot be opened
+# 2) Generate fake data to print as an example
+# 3) Call print_packet_info() to display fake data. You will need to do this once for each packet in the PCAP file
+# 4) Call print_summary() to display a fake summary. You will need to do this with your accumulated data
+##########
+def run_example():
+  
+    global total_packet_count, total_bytes_count
+
+    flow_db = {}
+
+    total_packet_count = 0
+    total_bytes_count = 0
+
+    ## Open file and fail if error    
+    try:
+        dmp_file = sys.argv[1]
+        fp_dmp_file = open(dmp_file, 'rb')
+
+    except Exception as e:
+        print('Error: please supply pcap filename!\n')
+        return
+
+    ## Loop through each packet in file and print, updating counters
+    for (ts,buf) in dpkt.pcap.Reader(fp_dmp_file):
+        try:
+            eth = dpkt.ethernet.Ethernet(buf)
+            ip = eth.data
+            tcp = ip.data
+            ## Only update for TCP and UDP packets
+            if ip.p in (dpkt.ip.IP_PROTO_TCP, dpkt.ip.IP_PROTO_UDP):
+                flow_id = socket.inet_ntoa(ip.src) + ':' + str(tcp.sport) + '-' + socket.inet_ntoa(ip.dst) + ':' + str(tcp.dport)
+                protocol = 'tcp' if ip.p == dpkt.ip.IP_PROTO_TCP else 'udp'
+                if flow_id not in flow_db:
+                    flow_db[flow_id] = { 'src_ip': socket.inet_ntoa(ip.src), 'src_port': tcp.sport, 'dst_ip': socket.inet_ntoa(ip.dst), 'dst_port': tcp.dport,
+                                         'protocol': protocol, 'start_time': ts, 'flow_packets': 0, 'flow_bytes': 0 }
+
+                flow_db[flow_id]['flow_packets'] += 1
+                flow_db[flow_id]['flow_bytes'] += ip.len
+
+        except:
+            pass
+    
+    print_flow_summary_header()
+    # Print summary information
+    for id, flow in flow_db.items():
+        print_flow_summary_single(flow['src_ip'], flow['src_port'], flow['dst_ip'], flow['dst_port'], flow['protocol'], flow['start_time'], flow['flow_packets'], flow['flow_bytes'])
+    
+    print_flow_summary_footer()
+
+    fp_dmp_file.close()
+    
+if __name__ == '__main__':
+    run_example()

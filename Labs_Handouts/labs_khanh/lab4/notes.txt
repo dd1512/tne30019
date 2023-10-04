@@ -1,0 +1,26 @@
+What port will Apache run on when started?
+	80
+What directory from your RULE host will be served?
+	/usr/local/www/apache24/data
+Locate where the error log and access log will be written to
+	/var/log/httpd-error.log
+	/var/log/httpd-access.log
+
+4-C
+
+https://help.dreamhost.com/hc/en-us/articles/216363187-Password-protecting-your-site-with-an-htaccess-file
+
+https://httpd.apache.org/docs/2.4/programs/htpasswd.html
+https://httpd.apache.org/docs/current/howto/htaccess.html#when
+
+- Create .htpasswd file under /usr/local/www/apache24/
+	htpasswd -c /usr/local/www/apache24/.htpasswd ruleperson
+
+- Create .htaccess file under /usr/local/www/apache24/data/private
+	AuthType Basic
+	AuthName "Enter Password"
+	AuthUserFile "/usr/local/www/apache24/.htpasswd"
+	AuthGroupFile "/dev/null"
+
+	Require user ruleperson
+	

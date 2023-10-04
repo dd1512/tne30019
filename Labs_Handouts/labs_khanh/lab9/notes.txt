@@ -1,0 +1,60 @@
+#
+
+## /etc/rc.conf
+samba_server_enable="YES"
+
+## /usr/local/etc/smb4.conf
+[global]
+        workgroup = MSHOME
+        server string = rule55.caia.swin.edu.au
+        security = user
+        hosts allow = 136.186., 127.0.0.1, 10.
+        ntlm auth = yes
+
+[homes]
+        comment = Home Directories
+        path = /usr/home/%S
+        writable = yes
+        browseable = no
+
+# Distinction task
+# mkdir /usr/home/samba/pubStuff
+# chmod 777 /usr/home/samba/pubStuff
+# service samba_server restart
+[public]
+        comment = Lab Public Share
+        create mask = 0777
+        force create mode = 0666
+        path = /usr/home/samba/pubStuff
+        writable = yes
+
+
+## Create samba user for FreeBSD system and Samba server
+adduser
+Username: samba
+...
+Enter password: samba
+Enter password again: samba
+
+smbpasswd -a samba
+New SMB password: samba
+Retype new SMB password: samba
+
+## Create autocollector user for FreeBSD system and Samba server
+adduser
+Username: autocollector
+...
+Enter password: autocollector
+Enter password again: autocollector
+
+smbpasswd -a autocollector
+New SMB password: autocollector
+Retype new SMB password: autocollector
+
+
+ee /etc/rc.conf
+samba_server_enable="YES"
+
+testparm
+
+service samba_server start | restart

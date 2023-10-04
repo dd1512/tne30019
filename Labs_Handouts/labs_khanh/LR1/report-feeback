@@ -1,0 +1,17 @@
+Good work overall. 
+
+Some feedback for getting C/D mark for future reports:
+- The **Abstract** section should be used to summarise what the lab is about and what you achieved after completing the lab. Your aiming mark should only be included as the last sentence of this section. 
+- The **Result** section should include important outputs/screenshots to show what you achieved. For example, for Pass task, a screenshot of the webpage with a short description (e.g. Figure 1 shows the webpage with all information required hosted by Apache server running on RULExx) is good enough.
+- The **Discussion** section is where you explain the steps/details you did to complete lab tasks and discuss the results. This is the most important section of the report and should be written in details with necessary information included (i.e. configuration, commands, screenshots) so that if someone read your lab report, they should be able to redo all the lab tasks and get the same results as yours.
+	- Use sub-sections to clearly delineate different lab tasks for better structure.
+	- All questions in the lab handout should be addressed in this section (Do **NOT** include the question itself in the report)
+- Resources used to answer lab questions/complete lab tasks must be properly cited and documented in the **Reference** section to avoid plagiarism.
+- Report format:
+	- The author name/affiliation should be centered.
+	- Strictly use IEEE Conference formatting for all components.
+	- Consider using mono-spaced font style for configuration details, Unix commands, Unix file location for better readability.
+	- Use higher quality, bigger size screenshots for better readability
+	
+	
+Good effort, but was expecting a little more depth for the Results and Discussion sections.

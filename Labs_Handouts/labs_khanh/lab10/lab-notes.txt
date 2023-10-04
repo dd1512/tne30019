@@ -1,0 +1,7 @@
+- Install cups-filters package
+	pkg install cups-filters
+- Edit /usr/local/etc/cups/cupsd.conf to
+	- Listen for all connections on port 631
+	- Allow access to server for subnet 136.186.0.0/16 and 10.0.0.0/8
+- Create an empty pdf backend in /usr/local/libexec/cups/backend AND set the right permission
+- Add PDFPrinter using either Web interface or lpadmin command

@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+from datetime import datetime
+from scapy.all import *
+from collections import defaultdict
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: ./tcpsummary filename.pcap")
+        sys.exit(1)
+
+    pcap_file = sys.argv[1]
+# Redirect stderr to null to suppress warnings
+    original_stderr = sys.stderr
+    sys.stderr = open(os.devnull, 'w')
+
+    # Scapy operations
+    packets = rdpcap(pcap_file)
+
+    # Restore stderr
+    sys.stderr.close()
+    sys.stderr = original_stderr
+
+
+    flow_dict = defaultdict(lambda: {'packets': 0, 'bytes': 0, 'start_time': None})
+
+    for packet in packets:
+        if 'IP' in packet and ('TCP' in packet or 'UDP' in packet):
+            src_ip = packet['IP'].src
+            dst_ip = packet['IP'].dst
+            proto = 'TCP' if 'TCP' in packet else 'UDP'
+            src_port = packet[proto].sport
+            dst_port = packet[proto].dport
+
+            flow_tuple = f"{src_ip}:{src_port}-{dst_ip}:{dst_port}/{proto}"
+            flow_dict[flow_tuple]['packets'] += 1
+            flow_dict[flow_tuple]['bytes'] += len(packet)
+            
+            if flow_dict[flow_tuple]['start_time'] is None:
+                flow_dict[flow_tuple]['start_time'] = float(packet.time)
+
+    print("--------------- PER-FLOW INFO -----------------")
+    for flow, data in flow_dict.items():
+        print(f"Flow: {flow}")
+        print(f"Start time: {datetime.fromtimestamp(float(data['start_time'])).strftime('%Y-%m-%d %H:%M:%S.%f')}")
+        print(f"Total packets: {data['packets']}")
+        print(f"Total bytes: {data['bytes']}")
+        print()
+
+    print("-----------------------------------------------")
+
+if __name__ == "__main__":
+    main()

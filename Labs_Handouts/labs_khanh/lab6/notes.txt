@@ -1,0 +1,8 @@
+1. Install python3 on Freebsd
+pkg install python3
+2. Install python pip package manager
+pkg install py39-pip
+3. Install dpkt module for python
+pip install dpkt
+4. Write the code and put it inside /home/student/pcap_lab
+5. Set executable bit for the scripts

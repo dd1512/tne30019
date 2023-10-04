@@ -1,0 +1,65 @@
+tcpdump -r lab7.pcapng -n -tt -q src port 80 | tr -d ':' | awk '{print $3, $4, $5 "," $1 "," $NF}'
+    tcpdump -r lab7.pcapng -n -tt -q src port 80:
+        -r lab7.pcapng: Reads packet data from file lab7.pcapng.
+        -n: Avoids converting addresses to hostnames.
+        -tt: Prints a timestamp in seconds since the epoch (Jan 1, 1970, 00:00:00).
+        -q: Provides less protocol information, making the output quieter.
+        src port 80: Filters for packets with a source port of 80, which is typically HTTP traffic.
+
+    tr -d ':':
+        Removes colons from the output. This might be aimed at cleaning up the output, especially the time field.
+
+    awk '{print $3, $4, $5 "," $1 "," $NF}':
+        Uses awk to format the output:
+            $3, $4, $5: Prints fields 3, 4, and 5 which are the source IP, the symbol >, and the destination IP, respectively.
+            $1: Prints field 1, which is the timestamp.
+            $NF: Prints the last field, which typically includes the packet length.
+
+The command will output lines with the format:
+
+
+source IP > destination IP , timestamp , packet length
+
+
+
+
+
+tcpdump -r lab7.pcapng -ntt src port 80 | sed 's/Flags.*length//' | tr -d ':' | awk '{print $3,$4,$5 "," $1 "," $NF}'
+tcpdump -r lab7.pcapng -ntt src port 80 | tr -d ':' | awk '{for (i=NF;i>=1;i--) if ($i=="length") print $3 " > " $5 "," $1 "," $(i+1)}'
+
+
+tcpdump -ntt -r lab7.pcapng src port 80 | cut -d' ' -f1 > 80-time.csv
+tcpdump -ntt -r lab7.pcapng src port 80 | cut -d' ' -f3,4,5 | sed 's/://'  > 80-flow.csv
+tcpdump -ntt -r lab7.pcapng src port 80 | awk -F 'length ' '{print $2}' | cut -d: -f1 > 80-len.csv
+paste -d, 80-flow.csv 80-time.csv 80-len.csv > 80.csv
+
+
+
+
+
+Distinction Task
+Email
+	Bursty
+	Flat periods (when nothing happens), slow increases (querying for email information), and big spikes (download actual email)
+	Generally not impactful on home gateway unless downloading an email with a large attachment
+	
+	
+HTTP
+	Multiple connections, one for each component of the web page
+	Means TCP window may need to regrow each time
+	Generally smooth (but high bit rate) transfers
+	Each content is delivered as quickly as possible when requested
+	Minimal impact on router as traffic is typically downloaded and predictable but large downloads may fill buffers and cause problems with delay to other - concurrent - flows
+	
+	
+FTP
+	Two flows, first is failed attempt, second is successful attempt
+	Most flow is bursty but low bit rate and consists of commands to request download except when actual file transfer is requested
+	Typically like HTTP during transfer but burstyness can mean sometimes can cause high buffer usage
+	When bit rate is low, could be impacted by other (greedy) flows as they ruin the interactive nature of ftp
+	
+	
+SSH
+	Generally low bit rate but we can't tell what is going on. Slow inclines indicate most packets contain little data, the odd large packet is probably due to a large burst of data sent in one go from the server
+	As it is encrypted it is hard to tell
+	SSH is an interactive session, despite low bit rate, it can be impacted by other flows, it however is unlikely to cause much impact to other flows

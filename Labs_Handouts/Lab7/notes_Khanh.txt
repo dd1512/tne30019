@@ -1,0 +1,14 @@
+B3
+	nmap -v -sn 136.186.230.0/24
+
+B5
+	nmap -v rule30.i4t.swin.edu.au
+
+B6
+	nmap -v -p 1-65535 rule30.i4t.swin.edu.au
+	or
+	nmap -v -p - rule30.i4t.swin.edu.au
+
+C123
+	nmap -v 136.186.230.21
+	nmap -v -sV 136.186.230.21

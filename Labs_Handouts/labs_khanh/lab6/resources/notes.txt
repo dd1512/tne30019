@@ -1,0 +1,5 @@
+- Decide which language to use (recommended Python3)
+- Install python3 on your rule host
+	pkg install python3
+- Install dpkt (or scapy) library using pip
+- Write your script

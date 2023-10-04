@@ -1,0 +1,14 @@
+- samba configuration /usr/local/etc/smb4.conf
+- Create users
+	- FreeBSD users (adduser)
+		- samba
+		- autocollector
+	- samba users (smbpasswd -a <username>)
+		- samba
+		- autocollector
+
+- mkdir /home/samba
+ chown samba ..
+
+- /etc/rc.conf
+- service samba_server start/restart

@@ -1,0 +1,17 @@
+- Offline
+	1. Install Tex Distribution
+		- TeX Live (Windows/Linux)
+		- MacTeX (MacOS)
+	2. Install TeX editor
+		- Texmaker
+	3. (Optional) Referencing
+		- Jabref
+
+- Online
+	- https://www.overleaf.com/
+	- https://www.sharelatex.com/
+	
+- IEEE
+	\documentclass[conference]{IEEEtran}
+- ACM
+	\documentclass[sigconf]{acmart}

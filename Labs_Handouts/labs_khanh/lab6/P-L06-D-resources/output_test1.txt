@@ -1,0 +1,28 @@
+
+--------------- PER-FLOW INFO -----------------
+
+Flow: 172.16.11.2:61016-172.16.10.2:80
+Protocol: tcp
+Start time: 2018-08-16 02:48:10.238506
+Total packets: 6
+Total bytes: 466
+
+Flow: 172.16.10.2:80-172.16.11.2:61016
+Protocol: tcp
+Start time: 2018-08-16 02:48:10.238523
+Total packets: 5
+Total bytes: 986
+
+Flow: 172.16.11.3:37269-172.16.10.2:12345
+Protocol: udp
+Start time: 2018-08-16 02:48:13.537505
+Total packets: 5
+Total bytes: 7490
+
+Flow: 172.16.10.2:12345-172.16.11.3:37269
+Protocol: udp
+Start time: 2018-08-16 02:48:13.591438
+Total packets: 1
+Total bytes: 1498
+
+-----------------------------------------------
