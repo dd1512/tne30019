@@ -7,7 +7,7 @@ import dpkt
 import socket
 
 def print_flow_summary_single(src_ip, src_port, dst_ip, dst_port, protocol, start_time, flow_packets, flow_bytes):
-    print (f"Flow:  {flow}")
+    print (f"Flow:  {src_ip}:{src_port}-{dst_ip}:{dst_port}")
     print (f"Start time: {datetime.datetime.utcfromtimestamp(start_time)}")
     print (f"Total packets: {flow_packets}")
     print (f"Total bytes: {flow_bytes}")
@@ -39,11 +39,32 @@ def run_example():
         #protocol = "TCP"
         #flow = f"{src_ip}:{src_port} -> {dst_ip}:{dst_port}"
         if ip.p in (dpkt.ip.IP_PROTO_TCP, dpkt.ip.IP_PROTO_UDP):
+        # The code then checks if the flow identifier is not already present in the flow_db dictionary. If it is not present, a new entry is created in the flow_db dictionary with the flow identifier (flow_id) as the key. The value of this entry is another dictionary that stores information about the flow, such as source IP address (src_ip), source port number (src_port), destination IP address (dst_ip), destination port number (dst_port), start time (ts), protocol (protocol), and counters for packets and bytes, initialized to 0 (packets and bytes).
             flow_id = src_ip + ':' + src_port + '-' + dst_ip + ':' + dst_port
             protocol = 'tcp' if ip.p == dpkt.ip.IP_PROTO_TCP else 'udp'
             if flow_id not in flow_db:
+                flow_db[flow_id] = {
+                    'src_ip': src_ip,
+                    'src_port': src_port,
+                    'dst_ip': dst_ip,
+                    'dst_port': dst_port,
+                    'start_time': ts,
+                    'protocol': protocol,
+                    'packets': 0,
+                    'bytes': 0
+                }
 
+        #The flow_db dictionary is updated for each packet in the PCAP file, incrementing the packet count and adding the packet size to the flow's byte count.
+        flow_db[flow_id]['packets'] += 1
+        flow_db[flow_id]['bytes'] += ip.len
 
+    print('\n--------------- PER-FLOW INFO -----------------\n')
+    # Regarding the second loop, it iterates over the key-value pairs in the flow_db dictionary using the items() method. In each iteration, the key is assigned to id and the corresponding value (the flow information dictionary) is assigned to flow.
+
+    #Within the loop, it calls the function print_flow_summary_single() and passes the values from the flow dictionary as arguments. These values are accessed using the respective keys (src_ip, src_port, dst_ip, dst_port, protocol, start_time, packets, and bytes).
+    for id, flow in flow_db.items():
+        print_flow_summary_single(flow['src_ip'], flow['src_port'], flow['dst_ip'], flow['dst_port'], flow['protocol'], flow['start_time'], flow['packets'], flow['bytes'])
+    print (f"-----------------------------------------------")
 
 if __name__ == '__main__':
     run_example()
